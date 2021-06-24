@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  activemq-classic:
+    image: c18s/activemq
+    container_name: activemq-classic
+    network_mode: bridge
+    restart: always
+    environment:
+      ACTIVEMQ_USER: ${ACTIVEMQ_USER:-admin}
+      ACTIVEMQ_PASSWORD: ${ACTIVEMQ_PASSWORD:-admin}
+    ports:
+      - ${PORT_WEB_CONSOLE:-8161}:8161
+      - ${PORT_AMQP:-5672}:5672
+    volumes:
+      - "./data:/opt/activemq/data"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "1"
