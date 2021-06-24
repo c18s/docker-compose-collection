@@ -1,0 +1,45 @@
+version: "3.9"
+
+x-app: &default-app
+  image: c18s/goproxy
+  network_mode: host
+  privileged: true
+  restart: always
+  dns:
+    - 1.1.1.1
+    - 8.8.8.8
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "100k"
+      max-file: "1"
+
+services:
+  socks5-proxy:
+    <<: *default-app
+    container_name: socks5-proxy
+    command:
+      [
+        "proxy",
+        "socks",
+        "--max-conns-rate",
+        "0",
+        "-t",
+        "tcp",
+        "-p",
+        "0.0.0.0:${PROXY_SOCKS_PORT:-1080}",
+      ]
+  http-proxy:
+    <<: *default-app
+    container_name: http-proxy
+    command:
+      [
+        "proxy",
+        "http",
+        "--max-conns-rate",
+        "0",
+        "-t",
+        "tcp",
+        "-p",
+        "0.0.0.0:${PROXY_HTTP_PORT:-3128}",
+      ]
