@@ -1,0 +1,54 @@
+version: "3.9"
+
+x-app: &default-app
+  network_mode: bridge
+  privileged: true
+  restart: always
+  dns:
+    - 1.1.1.1
+    - 8.8.8.8
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "100k"
+      max-file: "1"
+
+services:
+  mysql:
+    <<: *default-app
+    image: bitnami/mysql:8
+    container_name: mysql
+    ports:
+      - ${MYSQL_PORT:-3306}:3306
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_USER=${MYSQL_USER:-wordpress}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-wordpress}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
+    volumes:
+      - "./data/mysql:/bitnami/mysql/data"
+    healthcheck:
+      test: ["CMD", "/opt/bitnami/scripts/mysql/healthcheck.sh"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+  wordpress:
+    <<: *default-app
+    image: bitnami/wordpress-nginx:5
+    container_name: wordpress
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - ${WORDPRESS_HTTP_PORT:-80}:8080
+      - ${WORDPRESS_HTTPS_PORT:-443}:8443
+    environment:
+      - WORDPRESS_USERNAME=${WORDPRESS_USERNAME:-admin}
+      - WORDPRESS_PASSWORD=${WORDPRESS_PASSWORD:-admin}
+      - WORDPRESS_DATABASE_HOST=${WORDPRESS_DATABASE_HOST:-mysql}
+      - WORDPRESS_DATABASE_PORT_NUMBER=${WORDPRESS_DATABASE_PORT_NUMBER:-3306}
+      - WORDPRESS_DATABASE_NAME=${WORDPRESS_DATABASE_NAME:-wordpress}
+      - WORDPRESS_DATABASE_USER=${WORDPRESS_DATABASE_USER:-wordpress}
+      - WORDPRESS_DATABASE_PASSWORD=${WORDPRESS_DATABASE_PASSWORD:-wordpress}
+    volumes:
+      - "./data/wordpress:/bitnami/wordpress"
