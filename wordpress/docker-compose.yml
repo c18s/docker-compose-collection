@@ -16,7 +16,7 @@ x-app: &default-app
 services:
   mysql:
     <<: *default-app
-    image: bitnami/mysql:8
+    image: bitnami/mysql:8.0
     container_name: mysql
     ports:
       - ${MYSQL_PORT:-3306}:3306
