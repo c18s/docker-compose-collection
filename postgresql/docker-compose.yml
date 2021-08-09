@@ -1,0 +1,24 @@
+version: "3.9"
+
+x-app: &default-app
+  restart: always
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "100k"
+      max-file: "1"
+
+services:
+  postgresql:
+    <<: *default-app
+    image: bitnami/postgresql:13
+    container_name: postgresql
+    ports:
+      - ${POSTGRESQL_PORT:-5432}:5432
+    environment:
+      - ALLOW_EMPTY_PASSWORD=${ALLOW_EMPTY_PASSWORD:-yes}
+      - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME:-postgres}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE:-postgres}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD:-postgres}
+    volumes:
+      - "./data:/bitnami/postgresql/data"
