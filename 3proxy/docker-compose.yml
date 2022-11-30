@@ -19,3 +19,4 @@ services:
   3proxy:
     <<: *default-app
     container_name: 3proxy
+    env_file: .env
