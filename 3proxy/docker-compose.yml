@@ -1,0 +1,21 @@
+version: "3.9"
+
+x-app:
+  &default-app
+  image: c18s/3proxy
+  network_mode: host
+  privileged: true
+  restart: always
+  dns:
+    - 1.1.1.1
+    - 8.8.8.8
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "100k"
+      max-file: "1"
+
+services:
+  3proxy:
+    <<: *default-app
+    container_name: 3proxy
