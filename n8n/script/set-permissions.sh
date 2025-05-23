@@ -1,9 +1,17 @@
 #!/bin/bash
 set -e
 
+# Check if running as root or with sudo, if not auto-run with sudo
+if [[ $EUID -ne 0 ]]; then
+   echo "This script requires root privileges. Running with sudo..."
+   exec sudo "$0" "$@"
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 DATA_DIR="$PROJECT_ROOT/data"
+
+echo "Data directory: $DATA_DIR"
 
 mkdir -p "$DATA_DIR/n8n_data"
 mkdir -p "$DATA_DIR/pgdata"
