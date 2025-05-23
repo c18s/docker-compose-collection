@@ -1,0 +1,10 @@
+# Don't commit sensitive config
+.env
+
+# Local data volumes
+data/
+!data/.gitkeep
+
+# SSL certificates
+ssl/
+!ssl/.gitkeep
