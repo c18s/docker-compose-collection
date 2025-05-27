@@ -1,5 +1,5 @@
 {$N8N_HOST} {
-    reverse_proxy n8n:5678 {
+    reverse_proxy n8n:{$N8N_PORT} {
       flush_interval -1
     }
 }
