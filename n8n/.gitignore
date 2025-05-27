@@ -1,10 +1,28 @@
-# Don't commit sensitive config
-.env
+# Ignore all files except specified directories
+*
 
-# Local data volumes
-data/
+# Allow VS Code configuration
+!.vscode
+!.vscode/*
+
+# Allow configuration directories
+!config
+!config/.gitkeep
+!config/caddy
+!config/caddy/Caddyfile
+
+# Allow script files
+!script
+!script/*
+
+# Allow data directory
+!data
 !data/.gitkeep
 
-# SSL certificates
-ssl/
-!ssl/.gitkeep
+# Allow project files
+!.env.sample
+!.gitignore
+!docker-compose.yml
+!Makefile
+!README.md
+
