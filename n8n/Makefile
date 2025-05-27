@@ -4,12 +4,13 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
-.PHONY: help up down restart logs backup restore clean-restore drop-db create-db scale
+.PHONY: help init up down restart logs backup restore clean-restore drop-db create-db scale
 
 # Show this help message
 help:
 	@echo "Available commands:"
 	@echo "  help          Show this help message"
+	@echo "  init          Initialize directories, permissions, and .env file"
 	@echo "  up            Start all services"
 	@echo "  down          Stop all services"
 	@echo "  restart       Restart all services"
@@ -20,6 +21,11 @@ help:
 	@echo "  drop-db       Drop n8n database (WARNING: destroys all data)"
 	@echo "  create-db     Create n8n database"
 	@echo "  scale         Scale n8n-worker instances (usage: make scale WORKERS=n)"
+
+# Initialize directories, permissions, and .env file
+init:
+	@chmod +x ./script/init.sh
+	@./script/init.sh
 
 # Start all services
 up:

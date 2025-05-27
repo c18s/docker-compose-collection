@@ -4,11 +4,16 @@ A simple and production-ready setup for n8n with PostgreSQL, Redis, and Caddy re
 
 ## 🔧 Installation
 
-1. **Copy the environment file:**
+1. **Initialize the setup:**
 
    ```bash
-   cp .env.sample .env
+   make init
    ```
+
+   This will:
+   - Create necessary directories (`./data/`, `./config/`)
+   - Set proper permissions
+   - Copy `.env.sample` to `.env` (if not exists)
 
 2. **Edit the configuration:**
 
@@ -52,6 +57,7 @@ A simple and production-ready setup for n8n with PostgreSQL, Redis, and Caddy re
 
 ```bash
 make help          # Show all available commands
+make init          # Initialize directories, permissions, and .env file
 make up            # Start all services
 make down          # Stop all services
 make restart       # Restart all services
