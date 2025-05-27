@@ -84,5 +84,5 @@ create-db:
 
 # Scale n8n-worker instances
 scale:
-	docker-compose up -d --scale n8n-worker=$(WORKERS)
+	docker compose up -d --scale n8n-worker=$(WORKERS)
 	@echo "Scaled n8n-worker to $(WORKERS) instances."
