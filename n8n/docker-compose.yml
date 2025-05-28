@@ -84,6 +84,7 @@ services:
     restart: always
     environment:
       - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=${N8N_PORT:-5678}
     ports:
       - "80:80"
       - "443:443"
