@@ -47,7 +47,7 @@ A simple and production-ready setup for n8n with PostgreSQL, Redis, and Caddy re
 3. **Start the services:**
 
    ```bash
-   make up
+   make start
    ```
 
 4. **Access n8n:**
@@ -56,11 +56,11 @@ A simple and production-ready setup for n8n with PostgreSQL, Redis, and Caddy re
 ## 📋 Available Commands
 
 ```bash
-make help          # Show all available commands
+make help          # Show all available commands with organized sections
 make init          # Initialize directories, permissions, and .env file
-make up            # Start all services
-make down          # Stop all services
-make restart       # Restart all services
+make start         # Start all services
+make stop          # Stop all services
+make restart       # Restart all services (stop then start)
 make logs          # View logs from all services
 
 # Database Management
@@ -136,6 +136,8 @@ All data is stored in the `./data/` directory:
    ```env
    N8N_HOST=n8n.yourdomain.com
    N8N_PROTOCOL=https
+
+   WEBHOOK_URL=https://n8n.yourdomain.com/
    ```
 
 2. **Configure DNS:**

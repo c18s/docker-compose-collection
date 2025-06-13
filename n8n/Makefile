@@ -4,60 +4,46 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
-.PHONY: help init up down restart logs backup restore clean-restore drop-db create-db scale
+.PHONY: help init start stop restart logs backup restore clean-restore drop-db create-db scale
 
-# Show this help message
-help:
-	@echo "Available commands:"
-	@echo "  help          Show this help message"
-	@echo "  init          Initialize directories, permissions, and .env file"
-	@echo "  up            Start all services"
-	@echo "  down          Stop all services"
-	@echo "  restart       Restart all services"
-	@echo "  logs          View logs from all services"
-	@echo "  backup        Backup PostgreSQL database"
-	@echo "  restore       Restore PostgreSQL database (usage: make restore FILE=backup.sql)"
-	@echo "  clean-restore Clean restore - drop database, recreate and restore (usage: make clean-restore FILE=backup.sql)"
-	@echo "  drop-db       Drop n8n database (WARNING: destroys all data)"
-	@echo "  create-db     Create n8n database"
-	@echo "  scale         Scale n8n-worker instances (usage: make scale WORKERS=n)"
+help: ## Show this help message
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } END {printf "\n"}' $(MAKEFILE_LIST)
 
-# Initialize directories, permissions, and .env file
-init:
+##@ Setup and Initialization
+
+init: ## Initialize directories, permissions, and .env file
 	@chmod +x ./script/init.sh
 	@./script/init.sh
 
-# Start all services
-up:
+##@ Service Management
+
+start: ## Start all services
 	docker compose up -d
 
-# Stop all services
-down:
+stop: ## Stop all services
 	docker compose down
 
-# Restart all services
-restart:
-	docker compose restart
+restart: stop start ## Restart all services (stop then start)
 
-# View logs from all services
-logs:
+##@ Monitoring
+
+logs: ## View logs from all services
 	docker compose logs -f
 
-# Backup PostgreSQL database
-backup:
+##@ Database Operations
+
+backup: ## Backup PostgreSQL database
 	@echo "Creating database backup..."
 	docker compose exec postgres pg_dump -U $(POSTGRES_USER) $(POSTGRES_DB) > backup_$(shell date +%Y%m%d_%H%M%S).sql
 	@echo "Backup completed: backup_$(shell date +%Y%m%d_%H%M%S).sql"
 
-# Restore PostgreSQL database (usage: make restore FILE=backup.sql)
-restore:
+restore: ## Restore PostgreSQL database (usage: make restore FILE=backup.sql)
 	@if [ -z "$(FILE)" ]; then echo "Usage: make restore FILE=backup.sql"; exit 1; fi
 	@echo "Restoring database from $(FILE)..."
 	docker compose exec -T postgres psql -U $(POSTGRES_USER) -d $(POSTGRES_DB) < $(FILE)
 	@echo "Restore completed"
 
-# Clean restore - drop database, recreate and restore (usage: make clean-restore FILE=backup.sql)
-clean-restore:
+clean-restore: ## Clean restore - drop database, recreate and restore (usage: make clean-restore FILE=backup.sql)
 	@if [ -z "$(FILE)" ]; then echo "Usage: make clean-restore FILE=backup.sql"; exit 1; fi
 	@echo "Performing clean restore from $(FILE)..."
 	@echo "This will destroy all existing data!"
@@ -68,21 +54,20 @@ clean-restore:
 	docker compose exec -T postgres psql -U $(POSTGRES_USER) -d $(POSTGRES_DB) < $(FILE)
 	@echo "Clean restore completed"
 
-# Drop n8n database (WARNING: destroys all data)
-drop-db:
+drop-db: ## Drop n8n database (WARNING: destroys all data)
 	@echo "Dropping database..."
 	@echo "Terminating all connections to database..."
 	docker compose exec -T postgres psql -U $(POSTGRES_USER) -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(POSTGRES_DB)' AND pid <> pg_backend_pid();"
 	docker compose exec -T postgres psql -U $(POSTGRES_USER) -d postgres -c "DROP DATABASE IF EXISTS $(POSTGRES_DB);"
 	@echo "Database dropped"
 
-# Create n8n database
-create-db:
+create-db: ## Create n8n database
 	@echo "Creating database..."
 	docker compose exec -T postgres psql -U $(POSTGRES_USER) -d postgres -c "CREATE DATABASE $(POSTGRES_DB) OWNER $(POSTGRES_NON_ROOT_USER);"
 	@echo "Database created"
 
-# Scale n8n-worker instances
-scale:
+##@ Scaling
+
+scale: ## Scale n8n-worker instances (usage: make scale WORKERS=n)
 	docker compose up -d --scale n8n-worker=$(WORKERS)
 	@echo "Scaled n8n-worker to $(WORKERS) instances."
