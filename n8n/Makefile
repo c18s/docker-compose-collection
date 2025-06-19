@@ -1,7 +1,7 @@
 # Load environment variables from .env file if it exists
 ifneq (,$(wildcard ./.env))
-    include .env
-    export
+		include .env
+		export
 endif
 
 .PHONY: help init start stop restart logs backup restore clean-restore drop-db create-db scale
@@ -12,8 +12,8 @@ help: ## Show this help message
 ##@ Setup and Initialization
 
 init: ## Initialize directories, permissions, and .env file
-	@chmod +x ./script/init.sh
-	@./script/init.sh
+	@echo "Initializing directories and permissions..."
+	@bash script/init.sh
 
 ##@ Service Management
 
